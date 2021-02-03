@@ -1,6 +1,7 @@
 import os
 import os.path as osp
 import random
+from copy import deepcopy
 
 import mmcv
 import numpy as np
@@ -140,6 +141,7 @@ def _dist_train(model,
         meta=meta)
     # an ugly walkaround to make the .log and .log.json filenames the same
     runner.timestamp = timestamp
+    runner.cfg = deepcopy(cfg)
 
     # register hooks
     runner.register_training_hooks(
@@ -244,7 +246,6 @@ def _non_dist_train(model,
         work_dir=cfg.work_dir,
         logger=logger,
         meta=meta)
-
     # an ugly walkaround to make the .log and .log.json filenames the same
     runner.timestamp = timestamp
 
@@ -291,4 +292,5 @@ def _non_dist_train(model,
         runner.resume(cfg.resume_from)
     elif cfg.load_from:
         runner.load_checkpoint(cfg.load_from)
+
     runner.run(data_loaders, cfg.workflow, cfg.total_iters)
